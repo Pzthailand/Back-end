@@ -1,5 +1,5 @@
 const Users = require('../Models/Users')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const fs = require('fs') //npm install fs-extra
 

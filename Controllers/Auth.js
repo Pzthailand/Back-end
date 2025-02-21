@@ -3,7 +3,7 @@ const LimitSignUpOTP = require('../Models/LimitSignUpOTP')
 const LimitEmailOTP = require('../Models/LimitEmailOTP')
 const LimitPhoneOTP = require('../Models/LimitPhoneOTP')
 const fs = require('fs') //npm install fs-extra
-const bcrypt = require('bcrypt') //npm install bcrypt
+const bcrypt = require('bcryptjs'); //npm install bcrypt bcryptjs
 const jwt = require('jsonwebtoken') //npm install jsonwebtoken
 const nodemailer = require('nodemailer'); //npm install --save nodemailer
 require('dotenv').config() //npm install dotenv --save

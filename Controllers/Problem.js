@@ -1,6 +1,6 @@
 const Problems = require('../Models/Problems')
 const Users = require('../Models/Users')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const fs = require('fs').promises; // ใช้ fs.promises
 require('dotenv').config() //npm install dotenv --save
