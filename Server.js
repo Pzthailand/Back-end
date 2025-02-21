@@ -15,9 +15,12 @@ const { readdirSync } = require('fs')
 const app = express();
 //app.use(cors())
 app.use(cors({
-    origin: 'http://localhost:5173',// Specify the allowed origin
+    /*origin: 'http://localhost:5173',*/
+    origin: 'https://creative-syrniki-e07a2f.netlify.app',// Specify the allowed origin
     credentials: true
 }));
+
+
 app.use(express.json());  //Debug Postman (req,res)
 
 const  connectDB = require ('./Config/db.js')
