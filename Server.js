@@ -13,11 +13,11 @@ const { readdirSync } = require('fs')
 //app.use(morgan('dev'))
 //app.use(bodyParser.json({limit: '10mb'}))
 const app = express();
-app.use(cors())
-/*app.use(cors({
+//app.use(cors())
+app.use(cors({
     origin: 'http://localhost:5173',// Specify the allowed origin
     credentials: true
-}));*/
+}));
 app.use(express.json());  //Debug Postman (req,res)
 
 const  connectDB = require ('./Config/db.js')
