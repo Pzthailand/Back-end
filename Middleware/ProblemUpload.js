@@ -2,7 +2,7 @@ require('dotenv').config(); // npm install dotenv --save
 
 const multer = require('multer'); // npm install multer --save
 const cloudinary = require('cloudinary').v2; // npm install cloudinary
-const { CloudinaryStorage } = require('multer-storage-cloudinary'); // ใช้ CloudinaryStorage แทน multerStorageCloudinary
+const { CloudinaryStorage } = require('multer-storage-cloudinary'); // ใช้ CloudinaryStorage แทน multerStorageCloudinary // npm install multer-storage-cloudinary
 
 // ตั้งค่า Cloudinary
 cloudinary.config({
