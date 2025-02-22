@@ -164,7 +164,6 @@ exports.ProblemStatus = async (req,res) => {
 
 exports.ProblemRemove = async (req, res) => {
     try {
-
         const {id , username} = req.body;
 
         await Users.findOneAndUpdate(
@@ -183,9 +182,8 @@ exports.ProblemRemove = async (req, res) => {
                 if (removed[field] && removed[field] !== 'No_image.jpg') {
                     try {
                         // ลบไฟล์จาก Cloudinary
-                        /*const publicId = removed[field].split('/')[removed[field].split('/').length - 1].split('.')[0]; // ดึง public_id จาก URL ของ Cloudinary*/
-                        await cloudinary.uploader.destroy(field); // ลบไฟล์จาก Cloudinary
-                        console.log(`Removed file: ${removed[field]}`);
+                        await cloudinary.uploader.destroy(removed[field]); // ลบไฟล์จาก Cloudinary
+                        console.log(`Removed problem images ${removed[field]}`);
                     } catch (err) {
                         console.log(`Error removing file ${removed[field]} from Cloudinary:`, err);
                     }

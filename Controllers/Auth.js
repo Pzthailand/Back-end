@@ -263,7 +263,7 @@ exports.ProfileUpdate = async (req, res) => {
                 try {
                     // ลบไฟล์จาก Cloudinary
                     await cloudinary.uploader.destroy(NewData.fileold);
-                    console.log('Old image removed from Cloudinary');
+                    console.log('Current image removed from Cloudinary', NewData.fileold);
                 } catch (err) {
                     console.error('Error removing old image from Cloudinary:', err);
                 }

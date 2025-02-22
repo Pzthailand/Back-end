@@ -1,6 +1,14 @@
+require('dotenv').config() //npm install dotenv --save
 const Product = require('../Models/Product')
 //const fs = require('fs')
 const fs = require('fs').promises; // Use fs.promises for better async handling
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
 
 //Product Detail
 exports.Read = async (req,res) => {
@@ -26,8 +34,34 @@ exports.List = async (req,res) => {
 }
 
 
-//multiple file
 exports.Create = async (req, res) => {
+    try {
+        console.log(req.body); // Log the body of the request
+        console.log(req.files); // Log the uploaded files
+
+        var data = req.body; // Access form data
+
+
+        const uploadedFiles = ['file1', 'file2', 'file3' , 'file4' , 'file5'];
+        uploadedFiles.forEach(fileKey => {
+            if (req.files[fileKey] && req.files[fileKey].length > 0) {
+                data[fileKey] = req.files[fileKey][0].filename;
+            }
+        });
+        
+        // Assuming you have a Product model to save the data
+         const producted = await Product(data).save();
+         res.send('Create Success');
+        //console.log(data); // Log the final data object
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Server Error');
+    }
+}
+
+
+//multiple file
+/*exports.Create = async (req, res) => {
     try {
         console.log(req.body); // Log the body of the request
         console.log(req.files); // Log the uploaded files
@@ -57,13 +91,13 @@ exports.Create = async (req, res) => {
 
         // Assuming you have a Product model to save the data
          const producted = await Product(data).save();
-        res.send('Create Success');
+         res.send('Create Success');
         //console.log(data); // Log the final data object
     } catch (err) {
         console.log(err);
         res.status(500).send('Server Error');
     }
-}
+}*/
 
 
 //single file
@@ -87,8 +121,124 @@ exports.Create = async (req, res) => {
 }*/
 
 
+exports.Update = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const data = req.body; // Other form data
+        const files = req.files; // All uploaded files
 
-const path = require('path');
+        console.log('New data to update product:', data);
+        console.log('Uploaded files:', files);
+
+        // Check if the product exists
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+
+        if (files && files.file1 && files.file1.length > 0) {
+            data.file1 = files.file1[0].filename; // Assign the new file name to the data object
+        
+            if (data.currentimg1 === 'no_image.jpg') {
+                console.log(data.currentimg1);
+            } else {
+                if (data.currentimg1) {
+                    try {
+                        await cloudinary.uploader.destroy(data.currentimg1); // ลบไฟล์จาก Cloudinary
+                        console.log('Remove Product image 1 success updated.');
+                    } catch (err) {
+                        res.status(400).send('Update Product image 1 failed.');
+                    }
+                }
+            }
+        }
+        
+        if (files && files.file2 && files.file2.length > 0) {
+            data.file2 = files.file2[0].filename; // Assign the new file name to the data object
+        
+            if (data.currentimg2 === 'no_image.jpg') {
+                console.log(data.currentimg2);
+            } else {
+                if (data.currentimg2) {
+                    try {
+                        await cloudinary.uploader.destroy(data.currentimg2); // ลบไฟล์จาก Cloudinary
+                        console.log('Remove Product image 2 success updated.');
+                    } catch (err) {
+                        res.status(400).send('Update Product image 2 failed.');
+                    }
+                }
+            }
+        }
+        
+        if (files && files.file3 && files.file3.length > 0) {
+            data.file3 = files.file3[0].filename; // Assign the new file name to the data object
+        
+            if (data.currentimg3 === 'no_image.jpg') {
+                console.log(data.currentimg3);
+            } else {
+                if (data.currentimg3) {
+                    try {
+                        await cloudinary.uploader.destroy(data.currentimg3); // ลบไฟล์จาก Cloudinary
+                        console.log('Remove Product image 3 success updated.');
+                    } catch (err) {
+                        res.status(400).send('Update Product image 3 failed.');
+                    }
+                }
+            }
+        }
+        
+        if (files && files.file4 && files.file4.length > 0) {
+            data.file4 = files.file4[0].filename; // Assign the new file name to the data object
+        
+            if (data.currentimg4 === 'no_image.jpg') {
+                console.log(data.currentimg4);
+            } else {
+                if (data.currentimg4) {
+                    try {
+                        await cloudinary.uploader.destroy(data.currentimg4); // ลบไฟล์จาก Cloudinary
+                        console.log('Remove Product image 4 success updated.');
+                    } catch (err) {
+                        res.status(400).send('Update Product image 4 failed.');
+                    }
+                }
+            }
+        }
+        
+        if (files && files.file5 && files.file5.length > 0) {
+            data.file5 = files.file5[0].filename; // Assign the new file name to the data object
+        
+            if (data.currentimg5 === 'no_image.jpg') {
+                console.log(data.currentimg5);
+            } else {
+                if (data.currentimg5) {
+                    try {
+                        await cloudinary.uploader.destroy(data.currentimg5); // ลบไฟล์จาก Cloudinary
+                        console.log('Remove Product image 5 success updated.');
+                    } catch (err) {
+                        res.status(400).send('Update Product image 5 failed.');
+                    }
+                }
+            }
+        }
+       
+        // Update the product
+        const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true }).exec();
+        res.status(200).json(updatedProduct);
+
+    } catch (err) {
+        console.error('Error updating product:', err);
+        res.status(500).json({ error: 'An error occurred while updating the product' });
+    }
+};
+
+
+
+
+
+
+
+/*const path = require('path');
 
 exports.Update = async (req, res) => {
     try {
@@ -217,7 +367,7 @@ exports.Update = async (req, res) => {
         console.error('Error updating product:', err);
         res.status(500).json({ error: 'An error occurred while updating the product' });
     }
-};
+};*/
 
 
 //update single
@@ -250,8 +400,41 @@ exports.Update = async (req, res) => {
 }*/
 
 
-
 exports.Remove = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const removed = await Product.findOneAndDelete({ _id: id }).exec();
+
+        if (removed) {
+            // Array of file fields to check
+            const fileFields = ['file1', 'file2', 'file3', 'file4', 'file5'];
+
+            for (const field of fileFields) {
+                if (removed[field] && removed[field] !== 'No_image.jpg') {
+                    try {
+                        await cloudinary.uploader.destroy(removed[field]);
+                        console.log(`Removed Product images : ${removed[field]}`);
+                    } catch (err) {
+                        console.log(`Error removing file ${removed[field]}:`, err);
+                    }
+                }
+            }
+            res.json({
+                message: 'Product removed successfully',
+                product: removed,
+            });
+        } else {
+            res.status(404).json({ message: 'Product not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+
+
+/*exports.Remove = async (req, res) => {
     try {
         const id = req.params.id;
         const removed = await Product.findOneAndDelete({ _id: id }).exec();
@@ -281,7 +464,7 @@ exports.Remove = async (req, res) => {
         console.log(err);
         res.status(500).send('Server Error');
     }
-};
+};*/
 
 
 //single remove
