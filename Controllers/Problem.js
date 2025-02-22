@@ -1,9 +1,16 @@
+require('dotenv').config() //npm install dotenv --save
 const Problems = require('../Models/Problems')
 const Users = require('../Models/Users')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const fs = require('fs').promises; // ใช้ fs.promises
-require('dotenv').config() //npm install dotenv --save
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
 
 //User
 exports.ProblemReport = async (req, res) => {
@@ -154,7 +161,50 @@ exports.ProblemStatus = async (req,res) => {
     }
 }
 
+
 exports.ProblemRemove = async (req, res) => {
+    try {
+
+        const {id , username} = req.body;
+
+        await Users.findOneAndUpdate(
+            { username: username }, // search username
+            { $set: { problemstatus: 'None' } }, //No Problem Report
+            { new: true }
+        )
+
+        const removed = await Problems.findOneAndDelete({ _id: id }).exec();
+
+        if (removed) {
+            // Array of file fields to check
+            const fileFields = ['file1', 'file2'];
+    
+            for (const field of fileFields) {
+                if (removed[field] && removed[field] !== 'No_image.jpg') {
+                    try {
+                        // ลบไฟล์จาก Cloudinary
+                        const publicId = removed[field].split('/')[removed[field].split('/').length - 1].split('.')[0]; // ดึง public_id จาก URL ของ Cloudinary
+                        await cloudinary.uploader.destroy(publicId); // ลบไฟล์จาก Cloudinary
+                        console.log(`Removed file: ${removed[field]}`);
+                    } catch (err) {
+                        console.log(`Error removing file ${removed[field]} from Cloudinary:`, err);
+                    }
+                }
+            }
+            res.json({
+                message: 'Problem removed successfully',
+                Problems: removed,
+            });
+        } else {
+            res.status(404).json({ message: 'Problem not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+/*exports.ProblemRemove = async (req, res) => {
     try {
 
         const {id , username} = req.body;
@@ -193,7 +243,7 @@ exports.ProblemRemove = async (req, res) => {
         console.log(err);
         res.status(500).send('Server Error');
     }
-};
+};*/
 
 //Reply Problem
 exports.ProblemReply = async (req, res) => {
