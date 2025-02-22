@@ -5,17 +5,16 @@ const LimitPhoneOTP = require('../Models/LimitPhoneOTP')
 const fs = require('fs') //npm install fs-extra
 const bcrypt = require('bcryptjs'); //npm install bcrypt bcryptjs
 const jwt = require('jsonwebtoken') //npm install jsonwebtoken
-const nodemailer = require('nodemailer'); //npm install --save nodemailer
 require('dotenv').config() //npm install dotenv --save
 
-// Create a transporter object using the default SMTP transport
-let transporter = nodemailer.createTransport({
-    service: 'hotmail', // hotmail or gmail
-    auth: {
-        user: process.env.Email, // Replace with your email
-        pass: process.env.Password // Replace with your email password
-    }
-});
+
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
 
 function generateOTP() { 
     // Declare a digits variable  
@@ -250,7 +249,54 @@ exports.Profile = async (req,res) => {
     }
 }
 
-exports.ProfileUpdate = async (req,res) => {
+
+exports.ProfileUpdate = async (req, res) => {
+    try {
+        const id = req.params.id;
+        let NewData = req.body;
+
+        console.log("New data received: ", NewData);
+
+        // Handle file upload if present
+        if (typeof req.file !== 'undefined') {
+            NewData.file = req.file.filename;
+
+            if (NewData.fileold) {
+                try {
+                    // ลบไฟล์จาก Cloudinary
+                    await cloudinary.uploader.destroy(NewData.fileold);
+                    console.log('Old image removed from Cloudinary');
+                } catch (err) {
+                    console.error('Error removing old image from Cloudinary:', err);
+                }
+            }
+        }
+
+        // Add updatedAt timestamp
+        NewData.updatedAt = new Date();
+
+        // Update user data in the database
+        const updated = await Users.findOneAndUpdate(
+            { _id: id },
+            NewData,
+            { new: true }
+        ).exec();
+
+        // If the user was not found, return an error
+        if (!updated) {
+            return res.status(404).send('User not found');
+        }
+
+        // Send updated profile data back to the client
+        res.status(200).send({ message: 'Profile update success', updatedProfile: updated });
+
+    } catch (err) {
+        console.error('Error during profile update:', err);
+        res.status(500).send('Server Error');
+    }
+};
+
+/*exports.ProfileUpdate = async (req,res) => {
     try{
         const id = req.params.id
         var NewData = req.body
@@ -272,7 +318,6 @@ exports.ProfileUpdate = async (req,res) => {
         NewData.updatedAt = new Date();
 
         const updated = await Users.findOneAndUpdate({_id: id},NewData,{new: true}).exec();
-        /*res.send(updated)*/
         res.status(200).send('Profile update success')
         //const updated = await Product.findOneAndUpdate({_id: id},req.body,{new: true}).exec();
         //res.send(id)
@@ -280,7 +325,7 @@ exports.ProfileUpdate = async (req,res) => {
         console.log(err)
         res.status(500).send('Server Error')
     }
-}
+}*/
 
 /*exports.ProfileUpdate = async (req,res) => {
     try {
