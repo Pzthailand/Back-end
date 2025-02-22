@@ -4,12 +4,6 @@ const Product = require('../Models/Product')
 const fs = require('fs').promises; // Use fs.promises for better async handling
 const cloudinary = require('cloudinary').v2;
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-    api_key: process.env.CLOUDINARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET
-  });
-
 //Product Detail
 exports.Read = async (req,res) => {
     try{

@@ -8,12 +8,6 @@ const bcrypt = require('bcryptjs'); //npm install bcrypt bcryptjs
 const jwt = require('jsonwebtoken') //npm install jsonwebtoken
 const cloudinary = require('cloudinary').v2;
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-    api_key: process.env.CLOUDINARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET
-  });
-
 function generateOTP() { 
     // Declare a digits variable  
     // which stores all digits  
