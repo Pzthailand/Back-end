@@ -10,9 +10,10 @@ const { readdirSync } = require('fs')
 //const ProductRouter = require('./Routes/Product')
 
 
-//app.use(morgan('dev'))
-//app.use(bodyParser.json({limit: '10mb'}))
+
 const app = express();
+//app.use(morgan('dev'))
+app.use(bodyParser.json({limit: '5mb'}))
 //app.use(cors())
 app.use(cors({
     /*origin: 'http://localhost:5173',*/
